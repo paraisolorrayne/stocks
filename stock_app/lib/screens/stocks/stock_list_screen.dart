@@ -22,7 +22,7 @@ class StockListScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return FutureBuilder<String?>(
       future: storage.read(key: 'authentication_token'),
-      builder: (BuildContext context, AsyncSnapshot<String?> snapshot) {
+      builder: (BuildContext buildContext, AsyncSnapshot<String?> snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Scaffold(body: Center(child: CircularProgressIndicator()));
         } else if (snapshot.hasError) {
@@ -116,25 +116,34 @@ class StockListScreen extends StatelessWidget {
   void navigateToDetail(BuildContext context, StockPosition position) async {
     // Create an instance of SecureStorage or make sure that getAuthToken is a static method
     final SecureStorage secureStorage = SecureStorage();
-    final String? authToken = await secureStorage.getAuthToken();
 
-    if (authToken == null) {
+    await secureStorage.getAuthToken().then((value) {
       // Handle the case where there is no token
       // For example, navigate to an error screen or show an error message
-    } else {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => BlocProvider<StockDetailBloc>(
-            create: (context) => StockDetailBloc(
-              authToken: authToken,
-              stockDetailRepository: StockDetailRepository(),
-            )..add(FetchStockDetail(position.ticker)),
-            child: StockDetailScreen(position: position),
-          ),
-        ),
-      );
-    }
+      if (value == null) {
+        showDialog(
+          context: context,
+          builder: (BuildContext dialogContext) {
+            return AlertDialog(
+              title: Text('Authenticate error'),
+              // Conteúdo do diálogo.
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    // Operação no diálogo.
+                    Navigator.pop(dialogContext);
+                  },
+                  child: Text('OK'),
+                ),
+              ],
+            );
+          },
+        );
+      } else {
+        Navigator.of(context)
+            .pushNamed('/stockDetailListScreen', arguments: position);
+      }
+    });
   }
 }
 

@@ -34,7 +34,7 @@ class StockDetailScreen extends StatelessWidget {
         return BlocProvider<StockDetailBloc>(
           create: (context) => StockDetailBloc(
             authToken: authToken,
-            stockDetailRepository: context.read<StockDetailRepository>(),
+            stockDetailRepository: StockDetailRepository(),
           )..add(FetchStockDetail(position.ticker)),
           child: Scaffold(
             appBar: AppBar(
@@ -62,7 +62,11 @@ class StockDetailScreen extends StatelessWidget {
                   return Center(child: CircularProgressIndicator());
                 } else if (state is StockDetailLoaded) {
                   return StockDetailWidget(stockDetail: state.stockDetail);
-                } else {
+                } else if (state is StockDetailError) {
+                  print(state.message);
+                  return StockErrorWidget();
+                }
+                else {
                   return StockErrorWidget();
                 }
               },

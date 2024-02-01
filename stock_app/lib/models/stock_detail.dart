@@ -1,7 +1,7 @@
 class StockDetail {
   final String ticker;
   final String name;
-  final double lastPrice;
+  final String lastPrice;
   final String currency;
   final String type;
   final String logoUrl;
@@ -33,7 +33,7 @@ class StockDetail {
     return StockDetail(
       ticker: json['ticker'],
       name: json['name'],
-      lastPrice: (json['last_price'] as num).toDouble(),
+      lastPrice: json['last_price'],
       currency: json['currency'],
       type: json['type'],
       logoUrl: json['logo_url'],
@@ -45,23 +45,5 @@ class StockDetail {
       address: json['address'],
       ipoDate: DateTime.parse(json['ipo_date']),
     );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'ticker': ticker,
-      'name': name,
-      'last_price': lastPrice,
-      'currency': currency,
-      'type': type,
-      'logo_url': logoUrl,
-      'description': description,
-      'website': website,
-      'sector': sector,
-      'industry': industry,
-      'phone_number': phoneNumber,
-      'address': address,
-      'ipo_date': ipoDate.toIso8601String(),
-    };
   }
 }

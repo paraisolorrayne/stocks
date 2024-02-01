@@ -12,7 +12,7 @@ class StockDetailRepository {
 
   Future<StockDetail> getStockDetail(String token, String symbol) async {
     final response = await this.httpClient.get(
-      Uri.parse('$baseUrl/symbol'),
+      Uri.parse('$baseUrl/symbol/$symbol'),
       headers: {
         'Authorization': token,
         'Content-Type': 'application/json',

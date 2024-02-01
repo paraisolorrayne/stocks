@@ -49,7 +49,7 @@ class StockDetailInfo extends StatelessWidget {
             ),
             SizedBox(height: 8),
             Text(
-              'Last price: ${stockDetail.lastPrice.toStringAsFixed(2)}',
+              'Last price: ${stockDetail.lastPrice}',
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
