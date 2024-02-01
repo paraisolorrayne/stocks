@@ -1,19 +1,18 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:stock_app/models/stocks_model.dart';
 import 'package:stock_app/constants/constants.dart';
+import 'package:stock_app/models/stock_detail.dart';
 
-class StocksRepository {
+class StockDetailRepository {
   final http.Client httpClient;
   final String baseUrl = ApiConstants.baseUrl;
 
-
-  StocksRepository({http.Client? httpClient})
+  StockDetailRepository({http.Client? httpClient})
       : this.httpClient = httpClient ?? http.Client();
 
-  Future<StocksModel> fetchStocks(String token) async {
+  Future<StockDetail> getStockDetail(String token, String symbol) async {
     final response = await this.httpClient.get(
-      Uri.parse('$baseUrl/portfolio'),
+      Uri.parse('$baseUrl/symbol'),
       headers: {
         'Authorization': token,
         'Content-Type': 'application/json',
@@ -21,11 +20,10 @@ class StocksRepository {
     );
 
     if (response.statusCode == 200) {
-      return StocksModel.fromJson(json.decode(response.body));
+      final stockDetailJson = json.decode(response.body);
+      return StockDetail.fromJson(stockDetailJson);
     } else {
-      throw Exception('Failed to load stocks');
+      throw Exception('Failed to load stock detail');
     }
   }
-
-  
 }

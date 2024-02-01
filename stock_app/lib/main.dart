@@ -1,13 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:stock_app/bloc/details/stock_detail_bloc.dart';
+import 'package:stock_app/models/stocks_model.dart';
+import 'package:stock_app/repository/stocks/stock_detail_repository.dart';
 import 'package:stock_app/screens/login/login_screen.dart';
+import 'package:stock_app/screens/stocks/stock_detail_screen.dart';
 import 'package:stock_app/screens/stocks/stock_list_screen.dart';
+import 'package:stock_app/utils/secure_storage.dart';
 
 void main() {
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -17,10 +23,9 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: LoginScreen(), // This sets the default route to the LoginScreen
+      home: LoginScreen(),
       routes: {
         '/stockListScreen': (context) => StockListScreen(),
-        // Define other routes here
       },
     );
   }

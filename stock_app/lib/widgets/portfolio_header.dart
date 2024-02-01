@@ -12,22 +12,46 @@ class PortfolioHeader extends StatelessWidget {
       padding: EdgeInsets.all(16),
       color: Colors.grey[200], // Choose your color
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(
-            '\$${currentValue.toStringAsFixed(2)}',
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-          ),
-          Text(
-            '${percentageChange.toStringAsFixed(2)}%',
-            style: TextStyle(
-              fontSize: 16,
-              color: percentageChange >= 0 ? Colors.green : Colors.red,
+          Center(
+            child: Text(
+              '\$ ${currentValue.toStringAsFixed(2)}',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
+          ),
+          SizedBox(height: 8), // Adjust the height for your spacing needs
+          Center(
+            child: Text(
+              '${percentageChange.toStringAsFixed(2)}%',
+              style: TextStyle(
+                fontSize: 16,
+                color: percentageChange >= 0 ? Colors.green : Colors.red,
+              ),
+            ),
+          ),
+          SizedBox(height: 24), // This SizedBox provides the large space between the texts
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Stocks:',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              Text(
+                'Order by: amount of shares',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
           ),
         ],
       ),
     );
   }
 }
-
