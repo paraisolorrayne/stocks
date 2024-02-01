@@ -9,7 +9,7 @@ import 'package:stock_app/repository/login/user_repository.dart';
 class LoginScreen extends StatelessWidget {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
-  final FlutterSecureStorage storage = FlutterSecureStorage(); // Initialize storage
+  final FlutterSecureStorage storage = FlutterSecureStorage();
 
   @override
   Widget build(BuildContext context) {
@@ -18,12 +18,11 @@ class LoginScreen extends StatelessWidget {
       body: BlocProvider(
         create: (context) => LoginBloc(
           userRepository: UserRepository(),
-          storage: storage, // Pass the storage to the bloc
+          storage: storage,
         ),
         child: BlocConsumer<LoginBloc, LoginState>(
           listener: (context, state) {
             if (state is LoginSuccess) {
-              // Navigate to the next screen
               Navigator.of(context).pushReplacementNamed('/stockListScreen');
             } else if (state is LoginFailure) {
               ScaffoldMessenger.of(context).showSnackBar(
@@ -41,9 +40,9 @@ class LoginScreen extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    SizedBox(height: 40), // For spacing
-                    // Image.asset('assets/logo.png'), // Replace with your asset
-                    SizedBox(height: 40), // For spacing
+                    SizedBox(height: 40),
+                    Icon(Icons.person, size: 100.0, color: Colors.blue),
+                    SizedBox(height: 40),
                     TextFormField(
                       controller: emailController,
                       decoration: InputDecoration(labelText: 'Email'),
@@ -58,12 +57,19 @@ class LoginScreen extends StatelessWidget {
                     SizedBox(height: 20),
                     ElevatedButton(
                       onPressed: () {
-                        BlocProvider.of<LoginBloc>(context).add(
-                          Submitted(
-                            email: emailController.text,
-                            password: passwordController.text,
-                          ),
-                        );
+                        if (emailController.text.isEmpty ||
+                            passwordController.text.isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text("Fill in all fields")),
+                          );
+                        } else {
+                          BlocProvider.of<LoginBloc>(context).add(
+                            Submitted(
+                              email: emailController.text,
+                              password: passwordController.text,
+                            ),
+                          );
+                        }
                       },
                       child: Text('Login'),
                     ),
