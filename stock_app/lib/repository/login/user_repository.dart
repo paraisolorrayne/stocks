@@ -1,8 +1,9 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:stock_app/constants/constants.dart';
 
 class UserRepository {
-  final String baseUrl = 'https://stock-server-theta.vercel.app/api';
+  final String baseUrl = ApiConstants.baseUrl;
 
   Future<String> authenticate({
     required String email,
@@ -27,22 +28,4 @@ class UserRepository {
       throw Exception('Failed to authenticate');
     }
   }
-
-  Future<Map<String, dynamic>> getPortfolio(String token) async {
-    final response = await http.get(
-      Uri.parse('$baseUrl/portfolio'),
-      headers: <String, String>{
-        'Authorization': token,
-      },
-    );
-
-    if (response.statusCode == 200) {
-      return json.decode(response.body);
-    } else {
-      // Handle error, throw exception or return a message
-      throw Exception('Failed to load portfolio');
-    }
-  }
-
-  // Implement other methods as needed...
 }

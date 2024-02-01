@@ -1,59 +1,79 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:stock_app/bloc/stocks/stocks_bloc.dart';
+import 'package:stock_app/bloc/stocks/stocks_event.dart';
+import 'package:stock_app/bloc/stocks/stocks_state.dart';
+import 'package:stock_app/repository/stocks/stocks_repository.dart';
 import 'package:stock_app/screens/login/login_screen.dart';
-import 'package:stock_app/bloc/portfolio_bloc.dart'; // Adjust with actual import
-import 'package:stock_app/models/portfolio.dart'; // Adjust with actual import
+import 'package:stock_app/widgets/portfolio_header.dart';
+import 'package:stock_app/widgets/stock_list.dart';
 
 class StockListScreen extends StatelessWidget {
+  final storage = FlutterSecureStorage();
+
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => PortfolioBloc()..add(FetchPortfolio()),
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text('Portfolio'),
-          actions: [
-            IconButton(
-              icon: Icon(Icons.logout),
-              onPressed: () async {
-  // Assuming you're using SharedPreferences to store the token
-  final prefs = await SharedPreferences.getInstance();
-  await prefs.remove('authentication_token'); // Clear the token
+    return FutureBuilder<String?>(
+      future: storage.read(key: 'authentication_token'),
+      builder: (BuildContext context, AsyncSnapshot<String?> snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Scaffold(body: Center(child: CircularProgressIndicator()));
+        } else if (snapshot.hasError) {
+          return Scaffold(body: Center(child: Text('Error retrieving auth token')));
+        } else if (snapshot.data == null || snapshot.data!.isEmpty) {
+          return Scaffold(body: Center(child: Text('No auth token available')));
+        }
 
-  // Navigate back to the login screen, assuming it's the root of your navigation stack
-  Navigator.of(context).pushAndRemoveUntil(
-    MaterialPageRoute(builder: (context) => LoginScreen()),
-    (Route<dynamic> route) => false,
-  );
-},
+        final authToken = snapshot.data!;
+        final stocksRepository = StocksRepository();
+
+        return BlocProvider<StocksBloc>(
+          create: (context) => StocksBloc(stocksRepository: stocksRepository, authToken: authToken)
+            ..add(FetchStocks()),
+          child: Scaffold(
+            appBar: AppBar(
+              title: Text('Portfolio'),
+              actions: [
+                IconButton(
+                  icon: Icon(Icons.logout),
+                  onPressed: () async {
+                    await storage.delete(key: 'authentication_token');
+                    Navigator.of(context).pushAndRemoveUntil(
+                      MaterialPageRoute(builder: (context) => LoginScreen()),
+                      (Route<dynamic> route) => false,
+                    );
+                  },
+                ),
+              ],
             ),
-          ],
-        ),
-        body: BlocBuilder<PortfolioBloc, PortfolioState>(
-          builder: (context, state) {
-            if (state is PortfolioLoading) {
-              return Center(child: CircularProgressIndicator());
-            } else if (state is PortfolioLoaded) {
-              return ListView.builder(
-                itemCount: state.portfolio.positions.length,
-                itemBuilder: (context, index) {
-                  final position = state.portfolio.positions[index];
-                  return ListTile(
-                    leading: Image.network(position.logoUrl), // Display logo image
-                    title: Text(position.name),
-                    subtitle: Text('${position.quantity} stocks'),
-                    trailing: Text('\$${position.lastPrice.toStringAsFixed(2)}'),
+            body: BlocBuilder<StocksBloc, StocksState>(
+              builder: (context, state) {
+                if (state is StocksLoading) {
+                  return Center(child: CircularProgressIndicator());
+                } else if (state is StocksLoaded) {
+                  return Column(
+                    children: [
+                      PortfolioHeader(
+                        currentValue: state.stockModel.currentValue,
+                        percentageChange: state.stockModel.percentageChange,
+                      ),
+                      Expanded(
+                        child: StockList(stocks: state.stockModel.positions),
+                      ),
+                    ],
                   );
-                },
-              );
-            } else if (state is PortfolioError) {
-              return Center(child: Text('Failed to load portfolio'));
-            } else {
-              return Container(); // Empty container for uninitialized state
-            }
-          },
-        ),
-      ),
+                } else if (state is StocksError) {
+                  return Center(
+                    child: Text(state.error),
+                  );
+                }
+                return Center(child: Text('Unexpected state')); // default return in case none above
+              },
+            ),
+          ),
+        );
+      },
     );
   }
 }

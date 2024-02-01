@@ -12,10 +12,10 @@ dependencies:
     sdk: flutter
   cupertino_icons: ^1.0.2
   meta: ^1.7.0 # Used for annotations like @required.
-  http: ^0.13.3 # Enables making HTTP requests for API interaction.
+  http: ^1.2.0 # Enables making HTTP requests for API interaction.
   flutter_bloc: ^8.0.1 # Helps with state management using the BLoC pattern.
   equatable: ^2.0.3 # Provides easy value comparison to optimize state changes in BLoC.
-  flutter_secure_storage: ^5.0.2 # Provides a way to securely store data in a key-value store on iOS and Android. 
+  flutter_secure_storage: ^9.0.0 # Provides a way to securely store data in a key-value store on iOS and Android. 
 
 dev_dependencies:
   flutter_test:

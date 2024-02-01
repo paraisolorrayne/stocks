@@ -6,9 +6,10 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
   final UserRepository userRepository;
-  final storage = FlutterSecureStorage(); // Secure storage instance
+  final FlutterSecureStorage storage;
 
-  LoginBloc({required this.userRepository}) : super(LoginInitial()) {
+  LoginBloc({required this.userRepository, required this.storage})
+      : super(LoginInitial()) {
     on<Submitted>((event, emit) async {
       emit(LoginLoading());
       try {
@@ -16,13 +17,17 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
           email: event.email,
           password: event.password,
         );
-        // Save the token securely
-        await storage.write(key: 'authentication_token', value: token);
-        emit(LoginSuccess(token: token));
+        if (token != null) {
+          // Save the token securely
+          await storage.write(key: 'authentication_token', value: token);
+          emit(LoginSuccess(token: token));
+        } else {
+          // Handle the case where token is null
+          emit(LoginFailure(error: 'Authentication failed, token was null'));
+        }
       } catch (error) {
         emit(LoginFailure(error: error.toString()));
       }
     });
   }
 }
-
