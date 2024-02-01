@@ -34,7 +34,7 @@ class StockDetailScreen extends StatelessWidget {
         return BlocProvider<StockDetailBloc>(
           create: (context) => StockDetailBloc(
             authToken: authToken,
-            stockDetailRepository: context.read<StockDetailRepository>(),
+            stockDetailRepository: StockDetailRepository(),
           )..add(FetchStockDetail(position.ticker)),
           child: Scaffold(
             appBar: AppBar(

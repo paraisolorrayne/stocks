@@ -42,7 +42,7 @@ class LoginScreen extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     SizedBox(height: 40), // For spacing
-                    Image.asset('assets/logo.png'), // Replace with your asset
+                    // Image.asset('assets/logo.png'), // Replace with your asset
                     SizedBox(height: 40), // For spacing
                     TextFormField(
                       controller: emailController,

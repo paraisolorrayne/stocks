@@ -24,8 +24,19 @@ class MyApp extends StatelessWidget {
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       home: LoginScreen(),
-      routes: {
-        '/stockListScreen': (context) => StockListScreen(),
+      onGenerateRoute: (settings) {
+        // Verifique a rota e extraia os argumentos, se necessário.
+        if (settings.name == '/stockDetailListScreen') {
+          final args = settings.arguments
+              as StockPosition; // Ajuste o tipo de acordo com o seu objeto de argumento.
+          return MaterialPageRoute(
+            builder: (context) => StockDetailScreen(position: args),
+          );
+        }
+        // Rota padrão, se não corresponder a nenhuma das condições anteriores.
+        return MaterialPageRoute(
+          builder: (context) => StockListScreen(),
+        );
       },
     );
   }
